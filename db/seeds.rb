@@ -5,3 +5,22 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+
+3.times do |n|
+  # Restaurantクラスからrestaurantインスタンスを生成。
+  restaurant = Restaurant.new(
+    name: "testレストラン_#{n}",
+    fee: 100,
+    time_required: 10
+  )
+  # レストラン1つにつき12個のfoodを生成。
+  12.times do |m|
+    restaurant.foods.build(
+      name: "フード名_#{m}",
+      price: 500,
+      description: "フード_#{m}の説明文です。"
+    )
+  end
+
+  restaurant.save!
+end
