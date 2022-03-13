@@ -1,6 +1,11 @@
 import React, { Fragment, useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
+import { NewOrderConfirmDialog } from "../components/NewOrderConfirmDialog";
+
+import { postLineFoods, replaceLineFoods } from "../apis/line_foods";
+
+import { HTTP_STATUS_CODE } from "../constants";
 import {
   initialState as foodsInitialState,
   foodsActionTypes,
@@ -51,13 +56,16 @@ const submitOrder = () => {
 
 export const Foods = ({ match }) => {
   const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
+  const [state, setState] = useState(initialState);
+  const history = useHistory();
   const initialState = {
     isOpenOrderDialog: false,
     selectedFood: null,
     selectedFoodCount: 1,
+    isOpenNewOrderDialog: false,
+    existingRestaurautName: "",
+    newResutaurautName: "",
   };
-  const [state, setState] = useState(initialState);
-
   useEffect(() => {
     dispatch({ type: foodsActionTypes.FETCHING });
     fetchFoods(match.params.restaurantsId).then((data) => {
@@ -69,8 +77,32 @@ export const Foods = ({ match }) => {
       });
     });
   }, []);
-  console.log(foodsState);
-
+  const submitOrder = () => {
+    postLineFoods({
+      foodId: state.selectedFood.id,
+      count: state.selectedFoodCount,
+    })
+      .then(() => history.push("/orders"))
+      .catch((e) => {
+        if (e.response.status === HTTP_STATUS_CODE.NOT_ACCEPTABLE) {
+          setState({
+            ...state,
+            isOpenOrderDialog: false,
+            isOpenNewOrderDialog: true,
+            existingResutaurautName: e.response.data.existing_restaurant,
+            newResutaurautName: e.response.data.new_restaurant,
+          });
+        } else {
+          throw e;
+        }
+      });
+  };
+  const replaceOrder = () => {
+    replaceLineFoods({
+      foodId: state.selectedFood.id,
+      count: state.selectedFoodCount,
+    }).then(() => history.push("/orders"));
+  };
   return (
     <Fragment>
       <HeaderWrapper>
@@ -138,6 +170,15 @@ export const Foods = ({ match }) => {
               selectedFoodCount: 1,
             })
           }
+        />
+      )}
+      {state.isOpenNewOrderDialog && (
+        <NewOrderConfirmDialog
+          isOpen={state.isOpenNewOrderDialog}
+          onClose={() => setState({ ...state, isOpenNewOrderDialog: false })}
+          existingResutaurautName={state.existingResutaurautName}
+          newResutaurautName={state.newResutaurautName}
+          onClickSubmit={() => replaceOrder()}
         />
       )}
     </Fragment>
