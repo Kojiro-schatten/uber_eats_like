@@ -6,12 +6,15 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import styled from "styled-components";
-import { SubText } from "./StyledText";
 
-import OrderHeaderImage from "../images/order-header.png";
+import { SubText } from "./StyledText";
 import { CountUpButton } from "./Buttons/CountUpButton";
 import { CountDownButton } from "./Buttons/CountDownButton";
 import { OrderButton } from "./Buttons/OrderButton";
+
+// images
+import OrderHeaderImage from "../images/order-header.png";
+
 const OrderHeader = styled.img`
   width: 100%;
   height: 350px;
@@ -21,11 +24,13 @@ const DescriptionWrapper = styled.div`
   padding: 0 8px 8px 8px;
   height: 50px;
 `;
+
 const CountersWrapper = styled.div`
   margin-right: auto;
   display: flex;
   padding: 0 16px;
 `;
+
 const CountItem = styled.div`
   margin: 0 8px;
 `;

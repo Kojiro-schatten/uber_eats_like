@@ -1,34 +1,28 @@
 import React, { Fragment, useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useHistory, Link } from "react-router-dom";
+import { LocalMallIcon } from "../components/Icons";
+import { FoodWrapper } from "../components/FoodWrapper";
 import { NewOrderConfirmDialog } from "../components/NewOrderConfirmDialog";
-
-import { postLineFoods, replaceLineFoods } from "../apis/line_foods";
-
-import { HTTP_STATUS_CODE } from "../constants";
+import Skeleton from "@material-ui/lab/Skeleton";
 import {
   initialState as foodsInitialState,
   foodsActionTypes,
   foodsReducer,
 } from "../reducers/foods";
 import { fetchFoods } from "../apis/foods";
-import { REQUEST_STATE } from "../constants";
-import { COLORS } from "../style_constants";
-import { LocalMallIcon } from "../components/Icons";
-import { FoodWrapper } from "../components/FoodWrapper";
-import Skeleton from "@material-ui/lab/Skeleton";
+import { postLineFoods, replaceLineFoods } from "../apis/line_foods";
 import MainLogo from "../images/logo.png";
-import FoodImage from "../images/food-image.jpg";
 import { FoodOrderDialog } from "../components/FoodOrderDialog";
+import FoodImage from "../images/food-image.jpg";
+import { HTTP_STATUS_CODE } from "../constants";
+import { COLORS } from "../style_constants";
+import { REQUEST_STATE } from "../constants";
 
 const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 8px 32px;
-`;
-
-const MainLogoImage = styled.img`
-  height: 90px;
 `;
 
 const BagIconWrapper = styled.div`
@@ -37,6 +31,10 @@ const BagIconWrapper = styled.div`
 
 const ColoredBagIcon = styled(LocalMallIcon)`
   color: ${COLORS.MAIN};
+`;
+
+const MainLogoImage = styled.img`
+  height: 90px;
 `;
 
 const FoodsList = styled.div`
@@ -50,33 +48,31 @@ const ItemWrapper = styled.div`
   margin: 16px;
 `;
 
-const submitOrder = () => {
-  console.log("登録ボタンが押された");
-};
-
 export const Foods = ({ match }) => {
-  const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
-  const [state, setState] = useState(initialState);
-  const history = useHistory();
   const initialState = {
     isOpenOrderDialog: false,
     selectedFood: null,
     selectedFoodCount: 1,
     isOpenNewOrderDialog: false,
-    existingRestaurautName: "",
+    existingResutaurautName: "",
     newResutaurautName: "",
   };
+  const [state, setState] = useState(initialState);
+  const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
+  const history = useHistory();
+
   useEffect(() => {
-    dispatch({ type: foodsActionTypes.FETCHING });
+    dispatch({ type: foodsActionTypes?.FETCHING });
     fetchFoods(match.params.restaurantsId).then((data) => {
       dispatch({
-        type: foodsActionTypes.FETCH_SUCCESS,
+        type: foodsActionTypes?.FETCH_SUCCESS,
         payload: {
           foods: data.foods,
         },
       });
     });
   }, []);
+
   const submitOrder = () => {
     postLineFoods({
       foodId: state.selectedFood.id,
@@ -97,12 +93,14 @@ export const Foods = ({ match }) => {
         }
       });
   };
+
   const replaceOrder = () => {
     replaceLineFoods({
       foodId: state.selectedFood.id,
       count: state.selectedFoodCount,
     }).then(() => history.push("/orders"));
   };
+
   return (
     <Fragment>
       <HeaderWrapper>
@@ -132,8 +130,8 @@ export const Foods = ({ match }) => {
                 onClickFoodWrapper={(food) =>
                   setState({
                     ...state,
-                    isOpenOrderDialog: true,
                     selectedFood: food,
+                    isOpenOrderDialog: true,
                   })
                 }
                 imageUrl={FoodImage}
@@ -159,9 +157,7 @@ export const Foods = ({ match }) => {
               selectedFoodCount: state.selectedFoodCount - 1,
             })
           }
-          // 先ほど作った関数を渡します
           onClickOrder={() => submitOrder()}
-          // モーダルを閉じる時はすべてのstateを初期化する
           onClose={() =>
             setState({
               ...state,
