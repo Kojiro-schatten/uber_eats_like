@@ -45,6 +45,10 @@ const ItemWrapper = styled.div`
   margin: 16px;
 `;
 
+const submitOrder = () => {
+  console.log("登録ボタンが押された");
+};
+
 export const Foods = ({ match }) => {
   const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
   const initialState = {
@@ -54,18 +58,18 @@ export const Foods = ({ match }) => {
   };
   const [state, setState] = useState(initialState);
 
-  useEffect(() => {
-    dispatch({ type: foodsActionTypes.FETCHING });
-    fetchFoods(match.params.restaurantsId).then((data) => {
-      dispatch({
-        type: foodsActionTypes.FETCH_SUCCESS,
-        payload: {
-          foods: data.foods,
-        },
-      });
-    });
-  }, []);
-  console.log(foodsState);
+  // useEffect(() => {
+  //   dispatch({ type: foodsActionTypes.FETCHING });
+  //   fetchFoods(match.params.restaurantsId).then((data) => {
+  //     dispatch({
+  //       type: foodsActionTypes.FETCH_SUCCESS,
+  //       payload: {
+  //         foods: data.foods,
+  //       },
+  //     });
+  //   });
+  // }, []);
+  // console.log(foodsState);
 
   return (
     <Fragment>
@@ -108,12 +112,30 @@ export const Foods = ({ match }) => {
       </FoodsList>
       {state.isOpenOrderDialog && (
         <FoodOrderDialog
-          food={state.selectedFood}
           isOpen={state.isOpenOrderDialog}
+          food={state.selectedFood}
+          countNumber={state.selectedFoodCount}
+          onClickCountUp={() =>
+            setState({
+              ...state,
+              selectedFoodCount: state.selectedFoodCount + 1,
+            })
+          }
+          onClickCountDown={() =>
+            setState({
+              ...state,
+              selectedFoodCount: state.selectedFoodCount - 1,
+            })
+          }
+          // 先ほど作った関数を渡します
+          onClickOrder={() => submitOrder()}
+          // モーダルを閉じる時はすべてのstateを初期化する
           onClose={() =>
             setState({
               ...state,
               isOpenOrderDialog: false,
+              selectedFood: null,
+              selectedFoodCount: 1,
             })
           }
         />
