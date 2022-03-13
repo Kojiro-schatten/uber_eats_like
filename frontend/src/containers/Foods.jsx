@@ -58,18 +58,18 @@ export const Foods = ({ match }) => {
   };
   const [state, setState] = useState(initialState);
 
-  // useEffect(() => {
-  //   dispatch({ type: foodsActionTypes.FETCHING });
-  //   fetchFoods(match.params.restaurantsId).then((data) => {
-  //     dispatch({
-  //       type: foodsActionTypes.FETCH_SUCCESS,
-  //       payload: {
-  //         foods: data.foods,
-  //       },
-  //     });
-  //   });
-  // }, []);
-  // console.log(foodsState);
+  useEffect(() => {
+    dispatch({ type: foodsActionTypes.FETCHING });
+    fetchFoods(match.params.restaurantsId).then((data) => {
+      dispatch({
+        type: foodsActionTypes.FETCH_SUCCESS,
+        payload: {
+          foods: data.foods,
+        },
+      });
+    });
+  }, []);
+  console.log(foodsState);
 
   return (
     <Fragment>
